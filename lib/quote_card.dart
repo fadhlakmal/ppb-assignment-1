@@ -3,8 +3,8 @@ import 'package:myapp/quote.dart';
 
 class QuoteCard extends StatelessWidget {
   final Quote quote;
-  final VoidCallback delete, duplicate;
-  QuoteCard({required this.quote, required this.delete, required this.duplicate });
+  final VoidCallback delete, edit;
+  QuoteCard({required this.quote, required this.delete, required this.edit });
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +25,23 @@ class QuoteCard extends StatelessWidget {
               style: TextStyle(fontSize: 14.0, color: Colors.grey[800]),
             ),
             SizedBox(height: 8.0),
-            TextButton(
-              onPressed: delete, 
-              child: Text(
-                "Delete",
-                style: TextStyle(fontSize: 16.0, color: Colors.red),
-              ),),
-            SizedBox(height: 8.0,),
-            TextButton(
-              onPressed: duplicate, 
-              child: Text(
-                "Duplicate",
-                style: TextStyle(fontSize: 16.0, color: Colors.black),
-              ),)
+            Row(
+              children: [
+                TextButton(
+                  onPressed: delete, 
+                  child: Text(
+                    "Delete",
+                    style: TextStyle(fontSize: 16.0, color: Colors.red),
+                  ),
+                ),
+                TextButton(
+                  onPressed: edit, 
+                  child: Text(
+                    "Edit",
+                    style: TextStyle(fontSize: 16.0, color: Colors.blue),
+                  ))
+              ],
+            ),
           ],
         ),
       ),

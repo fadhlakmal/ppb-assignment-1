@@ -25,6 +25,117 @@ class _QuoteListState extends State<QuoteLists> {
     ),
   ];
 
+  void addQuote() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newText = '';
+        String newAuthor = '';
+
+        return AlertDialog(
+          title: Text('Add Quote'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(hintText: 'Enter text'),
+                onChanged: (value) {
+                  newText = value;
+                },
+              ),
+              SizedBox(height: 8.0),
+              TextField(
+                decoration: InputDecoration(hintText: 'Enter quote'),
+                onChanged: (value) {
+                  newAuthor = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (newText.isNotEmpty && newAuthor.isNotEmpty) {
+                  setState(() {
+                    quotes.add(Quote(text: newText, author: newAuthor));
+                  });
+                }
+                Navigator.pop(context);
+              },
+              child: Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void editQuote(Quote quote) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newText = quote.text;
+        String newAuthor = quote.author;
+
+        return AlertDialog(
+          title: Text('Edit Quote'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(hintText: 'Edit text'),
+                controller: TextEditingController(text: quote.text),
+                onChanged: (value) {
+                  newText = value;
+                },
+              ),
+              SizedBox(height: 8.0),
+              TextField(
+                decoration: InputDecoration(hintText: 'Edit author'),
+                controller: TextEditingController(text: quote.author),
+                onChanged: (value) {
+                  newAuthor = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (newText.isNotEmpty && newAuthor.isNotEmpty) {
+                  setState(() {
+                    quote.text = newText;
+                    quote.author = newAuthor;
+                  });
+                }
+                Navigator.pop(context);
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void deleteQuote(Quote quote) {
+    setState(() {
+      quotes.remove(quote);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,24 +146,22 @@ class _QuoteListState extends State<QuoteLists> {
         backgroundColor: Colors.redAccent,
       ),
       body: Column(
-        children:
-            quotes
-                .map(
-                  (quote) => QuoteCard(
-                    quote: quote,
-                    delete: () {
-                      setState(() {
-                        quotes.remove(quote);
-                      });
-                    },
-                    duplicate: () {
-                      setState(() {
-                        quotes.insert(quotes.indexOf(quote), quote);
-                      });
-                    },
-                  ),
-                )
-                .toList(),
+        children: quotes
+              .asMap()
+              .entries
+              .map(
+                (entry) => QuoteCard(
+                  quote: entry.value,
+                  delete: () => deleteQuote(entry.value),
+                  edit: () => editQuote(entry.value),
+                ),
+              )
+              .toList(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: addQuote,
+        backgroundColor: Colors.redAccent,
+        child: Icon(Icons.add),
       ),
     );
   }
