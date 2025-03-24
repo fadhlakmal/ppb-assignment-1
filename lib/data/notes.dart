@@ -1,4 +1,4 @@
-import 'package:myapp/model/note.dart';
+import 'package:myapp/models/note.dart';
 
 List<Note> notes = [
   Note(

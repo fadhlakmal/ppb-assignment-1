@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/model/note.dart';
+import 'package:myapp/models/note.dart';
 
 class NoteCard extends StatelessWidget {
   final Note note;
@@ -39,7 +39,7 @@ class NoteCard extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     note.title,
-                    style: TextStyle(fontSize: 12.0, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12.0, color: Colors.black, fontWeight: FontWeight.bold),
                     softWrap: true,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
