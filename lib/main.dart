@@ -1,70 +1,51 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:myapp/quote.dart';
-import 'package:myapp/quote_card.dart';
+import 'package:myapp/model/note.dart';
+import 'package:myapp/service/image_service.dart';
+import 'package:myapp/widget/note_card.dart';
+import 'package:myapp/data/notes.dart';
 
-void main() => runApp(MaterialApp(home: QuoteLists()));
+void main() => runApp(MaterialApp(home: NoteLists()));
 
-class QuoteLists extends StatefulWidget {
+class NoteLists extends StatefulWidget {
   @override
-  _QuoteListState createState() => _QuoteListState();
+  _NoteListState createState() => _NoteListState();
 }
 
-class _QuoteListState extends State<QuoteLists> {
-  List<Quote> quotes = [
-    Quote(
-      author: 'Oscar Wilde',
-      text: 'Be yourself; everyone else is already taken',
-    ),
-    Quote(
-      author: 'Oscar Wilde',
-      text: 'I have nothing to declare except my genius',
-    ),
-    Quote(
-      author: 'Oscar Wilde',
-      text: 'The truth is rarely pure and never simple',
-    ),
-  ];
+class _NoteListState extends State<NoteLists> {
+  final ImageService _imageService = ImageService();
 
-  Future<File?> pickGalleryImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (image == null) return null;
-    return File(image.path);
-  }
-
-  void addQuote() {
+  void addNote() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String newText = '';
-        String newAuthor = '';
+        String newTitle = '';
+        String newDesc = '';
         File? newImage;
 
         return AlertDialog(
-          title: Text('Add Quote'),
+          title: Text('Add Note'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(hintText: 'Enter text'),
+                decoration: InputDecoration(hintText: 'Enter title'),
                 onChanged: (value) {
-                  newText = value;
+                  newTitle = value;
                 },
               ),
               SizedBox(height: 8.0),
               TextField(
-                decoration: InputDecoration(hintText: 'Enter quote'),
+                decoration: InputDecoration(hintText: 'Enter description'),
                 onChanged: (value) {
-                  newAuthor = value;
+                  newDesc = value;
                 },
               ),
               SizedBox(height: 8.0),
               ElevatedButton(
                 onPressed: () async {
-                  newImage = await pickGalleryImage();
+                  newImage = await _imageService.pickGalleryImage();
                   setState(() {});
                 },
                 child: Text('Pick Image'),
@@ -87,12 +68,12 @@ class _QuoteListState extends State<QuoteLists> {
             ),
             TextButton(
               onPressed: () {
-                if (newText.isNotEmpty && newAuthor.isNotEmpty) {
+                if (newTitle.isNotEmpty && newDesc.isNotEmpty) {
                   setState(() {
-                    quotes.add(
-                      Quote(
-                        text: newText,
-                        author: newAuthor,
+                    notes.add(
+                      Note(
+                        title: newTitle,
+                        description: newDesc,
                         selectedImage: newImage,
                       ),
                     );
@@ -108,38 +89,38 @@ class _QuoteListState extends State<QuoteLists> {
     );
   }
 
-  void editQuote(Quote quote) {
+  void editNote(Note note) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String newText = quote.text;
-        String newAuthor = quote.author;
+        String newTitle = note.title;
+        String newDesc = note.description;
         File? newImage;
 
         return AlertDialog(
-          title: Text('Edit Quote'),
+          title: Text('Edit Note'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(hintText: 'Edit text'),
-                controller: TextEditingController(text: quote.text),
+                decoration: InputDecoration(hintText: 'Edit title'),
+                controller: TextEditingController(text: note.title),
                 onChanged: (value) {
-                  newText = value;
+                  newTitle = value;
                 },
               ),
               SizedBox(height: 8.0),
               TextField(
-                decoration: InputDecoration(hintText: 'Edit author'),
-                controller: TextEditingController(text: quote.author),
+                decoration: InputDecoration(hintText: 'Edit description'),
+                controller: TextEditingController(text: note.description),
                 onChanged: (value) {
-                  newAuthor = value;
+                  newDesc = value;
                 },
               ),
               SizedBox(height: 8.0),
               ElevatedButton(
                 onPressed: () async {
-                  newImage = await pickGalleryImage();
+                  newImage = await _imageService.pickGalleryImage();
                   setState(() {});
                 },
                 child: Text('Pick Image'),
@@ -162,11 +143,11 @@ class _QuoteListState extends State<QuoteLists> {
             ),
             TextButton(
               onPressed: () {
-                if (newText.isNotEmpty && newAuthor.isNotEmpty) {
+                if (newTitle.isNotEmpty && newDesc.isNotEmpty) {
                   setState(() {
-                    quote.text = newText;
-                    quote.author = newAuthor;
-                    quote.selectedImage = newImage;
+                    note.title = newTitle;
+                    note.description = newDesc;
+                    note.selectedImage = newImage;
                   });
                 }
                 Navigator.pop(context);
@@ -179,9 +160,9 @@ class _QuoteListState extends State<QuoteLists> {
     );
   }
 
-  void deleteQuote(Quote quote) {
+  void deleteNote(Note note) {
     setState(() {
-      quotes.remove(quote);
+      notes.remove(note);
     });
   }
 
@@ -190,28 +171,28 @@ class _QuoteListState extends State<QuoteLists> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text('Awesome Quotes'),
+        title: Text('Notes'),
         centerTitle: true,
         backgroundColor: Colors.lightBlue,
       ),
       body: SingleChildScrollView(
         child: Column(
           children:
-              quotes
+              notes
                   .asMap()
                   .entries
                   .map(
-                    (entry) => QuoteCard(
-                      quote: entry.value,
-                      delete: () => deleteQuote(entry.value),
-                      edit: () => editQuote(entry.value),
+                    (entry) => NoteCard(
+                      note: entry.value,
+                      delete: () => deleteNote(entry.value),
+                      edit: () => editNote(entry.value),
                     ),
                   )
                   .toList(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: addQuote,
+        onPressed: addNote,
         backgroundColor: Colors.lightBlueAccent,
         child: Icon(Icons.add),
       ),

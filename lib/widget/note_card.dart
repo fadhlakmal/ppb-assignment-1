@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/quote.dart';
+import 'package:myapp/model/note.dart';
 
-class QuoteCard extends StatelessWidget {
-  final Quote quote;
+class NoteCard extends StatelessWidget {
+  final Note note;
   final VoidCallback delete, edit;
-  QuoteCard({required this.quote, required this.delete, required this.edit});
+  NoteCard({required this.note, required this.delete, required this.edit});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,11 @@ class QuoteCard extends StatelessWidget {
               width: 100.0,
               height: 100.0,
               child:
-                  quote.selectedImage != null
+                  note.selectedImage != null
                       ? ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image.file(
-                          quote.selectedImage!,
+                          note.selectedImage!,
                           fit: BoxFit.cover,
                         ),
                       )
@@ -38,7 +38,7 @@ class QuoteCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    quote.text,
+                    note.title,
                     style: TextStyle(fontSize: 12.0, color: Colors.grey[600]),
                     softWrap: true,
                     overflow: TextOverflow.ellipsis,
@@ -46,7 +46,7 @@ class QuoteCard extends StatelessWidget {
                   ),
                   SizedBox(height: 6.0),
                   Text(
-                    quote.author,
+                    note.description,
                     style: TextStyle(fontSize: 10.0, color: Colors.grey[800]),
                     softWrap: true,
                     overflow: TextOverflow.ellipsis,
